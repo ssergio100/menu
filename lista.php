@@ -15,11 +15,6 @@ while($row = $rs->fetch()){
 function criarMenu($categoriaPai) {
 echo "<ul>";
 
-// Parte-1
-// Seleciona os registros do banco
-//$categorias = new ProdutoCategoria();
-//$where = "categoriaPai =".$categoriaPai;
-//$categorias = $categorias->select($where);
 global $pdo;
 if(!$categoriaPai){$sql = "SELECT * FROM menu where codpai is NULL";}else{
 $sql = "SELECT * FROM menu where codpai = $categoriaPai";
