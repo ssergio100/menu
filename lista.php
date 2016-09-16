@@ -12,24 +12,29 @@ while($row = $rs->fetch()){
 
 
 
-function criarMenu($categoriaPai) {
-echo "<ul class='noJS'>";
+function criarMenu($categoriaPai=null) {
+	global $html;
+	$html .= "<ul>";
 
-global $pdo;
-if(!$categoriaPai){$sql = "SELECT * FROM menu where codpai is NULL";}else{
-$sql = "SELECT * FROM menu where codpai = $categoriaPai";
-}
-//echo "SELECT * FROM menu where codpai = $categoriaPai";
-$rs = $pdo->query($sql);
-$rs->setFetchMode(PDO::FETCH_CLASS, 'MenuItem');
+	global $pdo;
 
-while($row = $rs->fetch()){
- 
-	echo "<li>".$row["nome"];
-	criarMenu($row["codmenu"]); // recursividade
-		echo "</li>";
+	if(!$categoriaPai){$sql = "SELECT * FROM menu where codpai is NULL";}else{
+	$sql = "SELECT * FROM menu where codpai = $categoriaPai";
 	}
-	echo "</ul>";
+	//echo "SELECT * FROM menu where codpai = $categoriaPai";
+	$rs = $pdo->query($sql);
+	$rs->setFetchMode(PDO::FETCH_CLASS, 'MenuItem');
+
+	while($row = $rs->fetch()){
+
+		$html.= "<li>".$row["nome"];
+		criarMenu($row["codmenu"]); // recursividade
+			$html.= "</li>";
+	}
+	
+	$html.= "</ul>";
+
+   return '{"html":"'.utf8_encode($html).'"}';
 }
 
 
@@ -38,29 +43,13 @@ while($row = $rs->fetch()){
 	<head>
 	</head>
 	<body>
-<ul id="MainMenu">
-	<?php criarMenu(0); ?>
-</ul>
-	<script
-			  src="https://code.jquery.com/jquery-3.1.0.min.js"
-			  integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
-			  crossorigin="anonymous"></script>
-	<script>
-$(document).ready(function() {
-   
-alert();
-		
-		    $('#MainMenu > li').click(function(e) {
-			e.stopPropagation();
-			var $el = $('ul',this);
-			$('#MainMenu > li > ul').not($el).slideUp();
-			$el.stop(true, true).slideToggle(400);
-		    });
-			$('#MainMenu > li > ul > li').click(function(e) {
-			e.stopImmediatePropagation();  
-		    });
-		});
-	</script>
+
+	<?php $html= "";$menu = criarMenu();
+	$arrMenu = json_decode($menu);
+	echo $arrMenu ->html;
+?>
+
+	
 	</body>
 <html>
 
